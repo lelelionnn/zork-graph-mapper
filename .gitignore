@@ -35,7 +35,10 @@ zork_map-*.tar
 npm-debug.log
 /assets/node_modules/
 
+# Claude
+.claude/worktrees
+
+
 # Database files
 *.db
 *.db-*
-
