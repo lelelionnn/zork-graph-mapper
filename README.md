@@ -1,6 +1,7 @@
 # Zork Graph Mapper
 
 App web local pra mapear dungeons de jogos text-adventure (Zork I, etc.) como grafos.
+Direções usam o vocabulário de Zork: N, S, W, E, NE, NW, SE, SW, U (up), D (down).
 Salas viram nós, conexões viram arestas com direções (N/S/L/O/up/down/...).
 Edição interativa com auto-save, persistência em SQLite.
 
@@ -19,7 +20,7 @@ Edição interativa com auto-save, persistência em SQLite.
 mise install
 ```
 
-Isso instala Erlang/OTP 27 e Elixir 1.17.
+Isso instala Erlang/OTP 27 e Elixir 1.18.
 
 ## Setup
 
@@ -37,17 +38,18 @@ mix phx.server
 
 Abre [http://localhost:4000](http://localhost:4000).
 
-O DB é `priv/zork_map_dev.db` — copie/backup à vontade, é só um arquivo.
+O DB é `zork_map_dev.db` na raiz do projeto — copie/backup à vontade, é só um arquivo.
 
 ## Como usar o editor
 
 - **Criar sala**: dois cliques (dblclick) em uma área vazia do canvas.
-- **Criar conexão**: clique em uma sala (vira ciano), depois clique em outra sala.
 - **Mover sala**: arrastar.
 - **Editar**: clique numa sala ou conexão — o painel lateral abre.
   - Sala: nome, notas (texto livre), itens (um por linha).
-  - Conexão: direção forward (origem → destino) e backward (destino → origem).
-    Deixar uma vazia = passagem one-way.
+  - Conexão: direção (texto livre, autocompleta com N/S/W/E/NE/NW/SE/SW/U/D).
+- **Criar conexão**: clique numa sala → painel lateral → "Nova conexão a partir daqui" →
+  clique na sala destino → modal pergunta direção (e opcionalmente cria a volta de uma vez).
+  Cada direção é uma aresta independente — pra one-way, desmarque "criar conexão de volta".
 - **Apagar**: pelo painel lateral.
 - **Re-layout**: botão na barra superior, recalcula posições com `cose`.
 
@@ -57,7 +59,10 @@ Tudo é salvo automaticamente (debounce de 500ms nos campos de texto, imediato n
 
 - `maps(id, name, description)`
 - `rooms(id, map_id, name, notes, items[], x, y)`
-- `connections(id, map_id, from_room_id, to_room_id, direction_forward, direction_backward)`
+- `connections(id, map_id, from_room_id, to_room_id, direction)`
+
+Cada conexão é uma aresta direcionada (one-way). Passagens bidirecionais simétricas viram
+duas linhas — o editor cria as duas de uma vez por padrão.
 
 `items` é serializado como JSON pelo `ecto_sqlite3`.
 
